@@ -1,0 +1,28 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Book {
+  id: ID!
+  title: String!
+  cover: String!
+  isPublished: Boolean!
+  author: Author!
+  authorId: Float!
+}
+
+type Author {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  nationality: String!
+  email: String!
+  books: [Book!]!
+}
+
+type Query {
+  authors: [Author!]!
+  author(id: Int!): Author!
+  books: [Book!]!
+  book(id: Int!): Book!
+}
