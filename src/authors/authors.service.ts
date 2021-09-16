@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, FindManyOptions } from 'typeorm';
 
 import { Author } from './entities/author.entity';
 
@@ -11,10 +11,16 @@ export class AuthorsService {
     private readonly authorsRepository: Repository<Author>,
   ) {}
 
-  findAll() {
-    const employees = this.authorsRepository.find();
+  findAll(options?: FindManyOptions<Author>) {
+    const books = this.authorsRepository.find({ ...options });
 
-    return employees;
+    return books;
+  }
+
+  async getAuthorsWithBooks() {
+    return this.findAll({
+      relations: ['books'],
+    });
   }
 
   findOne(id: number) {

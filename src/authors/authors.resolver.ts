@@ -1,4 +1,11 @@
-import { Resolver, Query, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Args, Int, Info } from '@nestjs/graphql';
+import {
+  parseResolveInfo,
+  ResolveTree,
+  simplifyParsedResolveInfoFragmentWithType,
+} from 'graphql-parse-resolve-info';
+import { GraphQLResolveInfo } from 'graphql';
+
 import { AuthorsService } from './authors.service';
 import { Author } from './entities/author.entity';
 
@@ -7,8 +14,19 @@ export class AuthorsResolver {
   constructor(private readonly authorsService: AuthorsService) {}
 
   @Query(() => [Author], { name: 'authors' })
-  findAll() {
-    return this.authorsService.findAll();
+  findAll(@Info() info: GraphQLResolveInfo) {
+    const parsedInfo = parseResolveInfo(info) as ResolveTree;
+    const simplifiedInfo = simplifyParsedResolveInfoFragmentWithType(
+      parsedInfo,
+      info.returnType,
+    );
+
+    const posts =
+      'books' in simplifiedInfo.fields
+        ? this.authorsService.getAuthorsWithBooks()
+        : this.authorsService.findAll();
+
+    return posts;
   }
 
   @Query(() => Author, { name: 'author' })
